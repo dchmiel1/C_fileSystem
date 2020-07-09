@@ -1,0 +1,143 @@
+#!/bin/sh
+
+cc main.c -o prog
+cp Files/* .
+clear
+echo "***************** Copying test ********************"
+echo "***************** Files <= 10kB *******************"
+./prog 6
+./prog 1 100
+read x
+./prog 2 f600B
+./prog 2 f5kB
+./prog 2 f10kB
+read x
+./prog 4
+read x
+./prog 7
+read x
+clear
+
+echo "***************** Copying test ********************"
+echo "***************** Files > 10kB *********************"
+./prog 6
+./prog 1 100
+read x
+./prog 2 f10,1kB
+./prog 2 f15,3kB
+./prog 2 f40kB
+read x
+./prog 4
+read x
+./prog 7
+read x
+clear
+
+echo "***************** Copying test ********************"
+echo "***************** File > 266kB ********************"
+
+./prog 6
+./prog 1 300
+read x
+./prog 2 f267kB
+read x
+./prog 4
+read x
+./prog 7
+read x
+clear
+
+echo "***************** Copying test ********************"
+echo "************** More than 50 files *****************"
+./prog 6
+./prog 1 100
+read x
+./prog 2 f0
+./prog 2 f1
+echo "..."
+
+i=2
+while [ $i -le 48 ]; do
+	./prog 2 f$i > x.txt
+	i=`expr $i + 1`
+done
+rm x.txt
+./prog 2 f49
+./prog 2 f50
+./prog 2 f51
+read x
+echo ""
+./prog 7
+read x
+clear
+
+echo "***************** Copying test ********************"
+echo "** Files with combined size larger than disk size *"
+./prog 6
+./prog 1 50
+read x
+./prog 2 f15,3kB
+./prog 2 f10,1kB
+./prog 2 f40kB
+read x
+./prog 4
+read x
+./prog 7
+read x
+clear
+
+echo "***************** Copying test ********************"
+echo "**********File already existing on disk ***********"
+./prog 6
+./prog 1 50
+read x
+./prog 2 f15,3kB
+./prog 2 f5kB
+./prog 2 f15,3kB
+read x
+./prog 4
+read x
+clear
+
+echo "****************** Removing test *****************"
+echo "************* File not existing on disk **********"
+./prog 6
+./prog 1 50
+read x
+./prog 2 f5kB
+./prog 2 f600B
+read x
+./prog 4
+read x
+./prog 5 f15,3kB
+read x
+./prog 4
+read x
+clear
+
+echo "******************* Cmp test *********************"
+./prog 6
+./prog 1 100
+read x
+./prog 2 fPT_ks1
+./prog 2 fPT_ks2
+./prog 2 fPT_ks3
+read x
+echo "'rm f*'"
+echo ""
+rm f*
+./prog 3 fPT_ks2
+./prog 3 fPT_ks3
+./prog 3 fPT_ks1
+read x
+echo "'ls f*'"
+ls f*
+read x
+echo "'cmp Files/fPT_ks1 fPT_ks1'"
+cmp Files/fPT_ks1 fPT_ks1
+echo "'cmp Files/fPT_ks2 fPT_ks2'"
+cmp Files/fPT_ks2 fPT_ks2
+echo "'cmp Files/fPT_ks3 fPT_ks3'"
+cmp Files/fPT_ks3 fPT_ks3
+rm f*
+
